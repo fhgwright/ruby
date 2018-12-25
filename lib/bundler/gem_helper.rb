@@ -74,7 +74,7 @@ module Bundler
 
     def build_gem
       file_name = nil
-      sh("gem build -V '#{spec_path}'") do
+      sh("gem2.6 build -V '#{spec_path}'") do
         file_name = File.basename(built_gem_path)
         SharedHelpers.filesystem_access(File.join(base, "pkg")) {|p| FileUtils.mkdir_p(p) }
         FileUtils.mv(built_gem_path, "pkg")
@@ -85,19 +85,19 @@ module Bundler
 
     def install_gem(built_gem_path = nil, local = false)
       built_gem_path ||= build_gem
-      out, _ = sh_with_code("gem install '#{built_gem_path}'#{" --local" if local}")
-      raise "Couldn't install gem, run `gem install #{built_gem_path}' for more detailed output" unless out[/Successfully installed/]
+      out, _ = sh_with_code("gem2.6 install '#{built_gem_path}'#{" --local" if local}")
+      raise "Couldn't install gem, run `gem2.6 install #{built_gem_path}' for more detailed output" unless out[/Successfully installed/]
       Bundler.ui.confirm "#{name} (#{version}) installed."
     end
 
   protected
 
     def rubygem_push(path)
-      gem_command = "gem push '#{path}'"
+      gem_command = "gem2.6 push '#{path}'"
       gem_command += " --key #{gem_key}" if gem_key
       gem_command += " --host #{allowed_push_host}" if allowed_push_host
       unless allowed_push_host || Bundler.user_home.join(".gem/credentials").file?
-        raise "Your rubygems.org credentials aren't set. Run `gem push` to set them."
+        raise "Your rubygems.org credentials aren't set. Run `gem2.6 push` to set them."
       end
       sh(gem_command)
       Bundler.ui.confirm "Pushed #{name} #{version} to #{gem_push_host}"
