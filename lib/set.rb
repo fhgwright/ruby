@@ -10,7 +10,7 @@
 # All rights reserved.  You can redistribute and/or modify it under the same
 # terms as Ruby.
 #
-#   $Id$
+#   $Id: set.rb 62575 2018-02-25 13:52:07Z eregon $
 #
 # == Overview
 #

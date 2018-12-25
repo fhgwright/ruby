@@ -2,7 +2,7 @@
 
   vm_dump.c -
 
-  $Author$
+  $Author: svn $
 
   Copyright (C) 2004-2007 Koichi Sasada
 

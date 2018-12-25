@@ -2,7 +2,7 @@
 
   thread_pthread.h -
 
-  $Author$
+  $Author: normal $
 
   Copyright (C) 2004-2007 Koichi Sasada
 

@@ -2,7 +2,7 @@
 #
 #   irb/completion.rb -
 #   	$Release Version: 0.9$
-#   	$Revision$
+#   	$Revision: 64089 $
 #   	by Keiju ISHITSUKA(keiju@ishitsuka.com)
 #       From Original Idea of shugo@ruby-lang.org
 #
