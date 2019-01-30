@@ -3,7 +3,7 @@
 
   thread_pthread.c -
 
-  $Author: normal $
+  $Author: naruse $
 
   Copyright (C) 2004-2007 Koichi Sasada
 
