@@ -6,11 +6,9 @@
 *.bc
 *.bundle
 *.dSYM
-*.dmyh
 *.dylib
 *.elc
 *.i
-*.inc
 *.log
 *.o
 *.obj
@@ -18,7 +16,6 @@
 *.orig
 *.pch
 *.pdb
-*.rbinc
 *.rej
 *.s
 *.sav
@@ -56,10 +53,8 @@ lcov*.info
 /*.res
 /*.pc
 /*.rc
-/*_prelude.c
 /build*/
 /COPYING.LIB
-/ChangeLog
 /Doxyfile
 /GNUmakefile
 /README.atheos
@@ -78,7 +73,6 @@ lcov*.info
 /config.h.in
 /config.status
 /config.status.lineno
-/configure
 /coverage/simplecov
 /coverage/simplecov-html
 /coverage/doclie
@@ -91,32 +85,25 @@ lcov*.info
 /encdb.h
 /exts.mk
 /goruby
-/id.[ch]
 /largefile.h
 /lcov-c-out
 /lcov-rb-out
 /lcov-out
-/lex.c
 /libruby*.*
-/miniprelude.c
 /miniruby
 /newdate.rb
 /newline.c
 /newver.rb
-/parse.c
-/parse.h
 /patches
 /patches-master
 /pitest.rb
 /ppack
 /prelude.c
 /preview
-/probes.dmyh
 /probes.h
 /rbconfig.rb
 /rename2.h
 /repack
-/revision.h
 /riscos
 /rubicon
 /ruby
@@ -149,14 +136,12 @@ lcov*.info
 /enc/*.def
 /enc/*.exp
 /enc/*.lib
-/enc/jis/props.h
 /enc/unicode/data
 
 # /coroutine/
 !/coroutine/**/*.s
 
 # /enc/trans/
-/enc/trans/*.c
 /enc/trans/*.def
 /enc/trans/*.exp
 /enc/trans/*.lib
@@ -179,31 +164,20 @@ lcov*.info
 /ext/-test-/win32/dln/dlntest.lib
 
 # /ext/etc/
-/ext/etc/constdefs.h
 
 # /ext/fiddle/
-/ext/fiddle/libffi-*
 
 # /ext/rbconfig/
-/ext/rbconfig/sizeof/sizes.c
-/ext/rbconfig/sizeof/limits.c
 
 # /ext/ripper/
-/ext/ripper/eventids1.c
-/ext/ripper/eventids2table.c
-/ext/ripper/ripper.*
 /ext/ripper/ids1
 /ext/ripper/ids2
 
 # /ext/socket/
 /ext/socket/constants.h
-/ext/socket/constdefs.h
-/ext/socket/constdefs.c
 
 # /gems
-/gems/*.gem
 /gems/src
-/gems/*-*
 
 # /lib/
 /lib/ruby/[1-9]*.*
@@ -213,8 +187,6 @@ lcov*.info
 /.rspec_status
 
 # /tool/
-/tool/config.guess
-/tool/config.sub
 
 # /win32/
 /win32/*.ico
