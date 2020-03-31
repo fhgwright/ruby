@@ -191,9 +191,7 @@ lcov*.info
 /ext/socket/constdefs.c
 
 # /gems
-/gems/*.gem
 /gems/src
-/gems/*-*
 
 # /spec/bundler
 /.rspec_status
