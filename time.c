@@ -4322,14 +4322,15 @@ time_wday(VALUE time)
 
     GetTimeval(time, tobj);
     MAKE_TM(time, tobj);
+    if (tobj->vtm.wday == VTM_WDAY_INITVAL) {
+        VALUE zone = tobj->vtm.zone;
+        if (!NIL_P(zone)) zone_localtime(zone, time);
+    }
     return INT2FIX((int)tobj->vtm.wday);
 }
 
 #define wday_p(n) {\
-    struct time_object *tobj;\
-    GetTimeval(time, tobj);\
-    MAKE_TM(time, tobj);\
-    return (tobj->vtm.wday == (n)) ? Qtrue : Qfalse;\
+    return (time_wday(time) == INT2FIX(n)) ? Qtrue : Qfalse; \
 }
 
 /*
@@ -4461,6 +4462,10 @@ time_yday(VALUE time)
 
     GetTimeval(time, tobj);
     MAKE_TM(time, tobj);
+    if (tobj->vtm.yday == 0) {
+        VALUE zone = tobj->vtm.zone;
+        if (!NIL_P(zone)) zone_localtime(zone, time);
+    }
     return INT2FIX(tobj->vtm.yday);
 }
 
@@ -5147,6 +5152,7 @@ tm_from_time(VALUE klass, VALUE time)
     ttm = DATA_PTR(tm);
     v = &vtm;
     GMTIMEW(ttm->timew = tobj->timew, v);
+    ttm->timew = wsub(ttm->timew, v->subsecx);
     v->subsecx = INT2FIX(0);
     v->zone = Qnil;
     ttm->vtm = *v;
