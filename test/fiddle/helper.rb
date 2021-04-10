@@ -95,6 +95,13 @@ end
 libc_so = nil if !libc_so || (libc_so[0] == ?/ && !File.file?(libc_so))
 libm_so = nil if !libm_so || (libm_so[0] == ?/ && !File.file?(libm_so))
 
+# https://github.com/ruby/fiddle/commit/b9e7c7b6e32088e8e02d952b4240b3665859af6b
+# Use libSystem.B.dylib instead of libm.dylib and libc.dylib
+# macOS 11.0+ removed libSystem.B.dylib from /usr/lib. But It works with dlopen.
+if RUBY_PLATFORM =~ /darwin/
+  libc_so = libm_so = "/usr/lib/libSystem.B.dylib"
+end
+
 if !libc_so || !libm_so
   ruby = EnvUtil.rubybin
   ldd = `ldd #{ruby}`
