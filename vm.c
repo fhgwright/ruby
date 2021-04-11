@@ -27,6 +27,8 @@
 #include "probes_helper.h"
 
 VALUE rb_str_concat_literals(size_t, const VALUE*);
+/* https://bugs.ruby-lang.org/issues/17777 */
+void rb_native_mutex_destroy(rb_nativethread_lock_t *lock);
 
 PUREFUNC(static inline const VALUE *VM_EP_LEP(const VALUE *));
 static inline const VALUE *
