@@ -1350,8 +1350,7 @@ dln_load(const char *file)
 	    if (dln_incompatible_library_p(handle)) {
 
 #   if defined __APPLE__ && \
-    defined(MAC_OS_X_VERSION_MIN_REQUIRED) && \
-    (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_11)
+    __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101100
 		/* dlclose() segfaults */
 		rb_fatal("%s - %s", incompatible, file);
 #   else
