@@ -519,7 +519,7 @@ preface_dump(FILE *out)
 	"-- Crash Report log information "
 	"--------------------------------------------\n"
 	"   See Crash Report log file under the one of following:\n"
-# if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6
+# if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
 	"     * ~/Library/Logs/CrashReporter\n"
 	"     * /Library/Logs/CrashReporter\n"
 # endif
@@ -544,7 +544,7 @@ postscript_dump(FILE *out)
 	"[IMPORTANT]"
 	/*" ------------------------------------------------"*/
 	"\n""Don't forget to include the Crash Report log file under\n"
-# if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6
+# if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
 	"CrashReporter or "
 # endif
 	"DiagnosticReports directory in bug reports.\n"
