@@ -181,7 +181,9 @@ module MJITHeader
   def self.conflicting_types?(code, cc, cflags)
     with_code(code) do |path|
       cmd = "#{cc} #{cflags} #{path}"
-      out = IO.popen(cmd, err: [:child, :out], &:read)
+      # As per gcc docs, set LC_ALL=C to avoid curly quotes in messages
+      cmd_env = {"LC_ALL" => "C"}
+      out = IO.popen(cmd_env, cmd, err: [:child, :out], &:read)
       !$?.success? &&
         (out.match?(/error: conflicting types for '[^']+'/) ||
          out.match?(/error: redefinition of parameter '[^']+'/))
