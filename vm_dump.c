@@ -490,7 +490,8 @@ rb_vmdebug_thread_dump_state(FILE *errout, VALUE self)
 }
 
 #if defined __APPLE__
-# if __DARWIN_UNIX03
+# include <AvailabilityMacros.h>
+# if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
 #   define MCTX_SS_REG(reg) __ss.__##reg
 # else
 #   define MCTX_SS_REG(reg) ss.reg
