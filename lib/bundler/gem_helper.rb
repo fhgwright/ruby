@@ -88,7 +88,7 @@ module Bundler
       cmd += " --local" if local
       _, status = sh_with_status(cmd.shellsplit)
       unless status.success?
-        raise "Couldn't install gem, run `gem2.7 install #{built_gem_path}' for more detailed output"
+        raise "Couldn't install gem, run `gem install #{built_gem_path}' for more detailed output"
       end
       Bundler.ui.confirm "#{name} (#{version}) installed."
     end
@@ -100,7 +100,7 @@ module Bundler
       cmd << "--key" << gem_key if gem_key
       cmd << "--host" << allowed_push_host if allowed_push_host
       unless allowed_push_host || Bundler.user_home.join(".gem/credentials").file?
-        raise "Your rubygems.org credentials aren't set. Run `gem2.7 push` to set them."
+        raise "Your rubygems.org credentials aren't set. Run `gem push` to set them."
       end
       sh_with_input(cmd)
       Bundler.ui.confirm "Pushed #{name} #{version} to #{gem_push_host}"
@@ -210,7 +210,7 @@ module Bundler
     end
 
     def gem_command
-      ENV["GEM_COMMAND"] ? ENV["GEM_COMMAND"] : "gem"
+      ENV["GEM_COMMAND"] ? ENV["GEM_COMMAND"] : "gem2.7"
     end
   end
 end
