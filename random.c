@@ -340,6 +340,11 @@ fill_random_bytes_urandom(void *seed, size_t size)
 #if 0
 #elif defined MAC_OS_X_VERSION_10_7 && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_7
 #include <Security/Security.h>
+#ifndef kSecRandomDefault
+/* hack for missing kSecRandomDefault.
+   some old macOS SDKs do not import SecRandom.h in Security.h */
+#include <Security/SecRandom.h>
+#endif
 
 static int
 fill_random_bytes_syscall(void *seed, size_t size, int unused)
