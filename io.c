@@ -119,6 +119,15 @@
 # include <copyfile.h>
 #endif
 
+/*
+ * Some OSes (e.g., OSX < 10.6) implement fcopyfile() but not
+ * COPYFILE_STATE_COPIED.  Since the only use of the former here
+ * requires the latter, we disable the former when the latter is undefined.
+ */
+#ifndef COPYFILE_STATE_COPIED
+#undef HAVE_FCOPYFILE
+#endif
+
 #include "ruby/util.h"
 
 #ifndef O_ACCMODE
