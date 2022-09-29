@@ -1,4 +1,5 @@
-set startup-with-shell off
+# Move this to end, so failure on older gdbs doesn't blow the rest
+# set startup-with-shell off
 
 define hook-run
   set $color_type = 0
@@ -1345,3 +1346,6 @@ define print_flags
 end
 
 source misc/gdb.py
+
+# Moved from beginning, since it fails on older gdbs
+set startup-with-shell off
