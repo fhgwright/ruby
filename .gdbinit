@@ -1,4 +1,5 @@
-set startup-with-shell off
+# Move this to end, so failure on older gdbs doesn't blow the rest
+# set startup-with-shell off
 
 define hook-run
   set $color_type = 0
@@ -1348,3 +1349,6 @@ define print_flags
   printf "RUBY_FL_USER17      : %s\n", ((struct RBasic*)($arg0))->flags & RUBY_FL_USER17 ? "1" : "0"
   printf "RUBY_FL_USER18      : %s\n", ((struct RBasic*)($arg0))->flags & RUBY_FL_USER18 ? "1" : "0"
 end
+
+# Moved from beginning, since it fails on older gdbs
+set startup-with-shell off
