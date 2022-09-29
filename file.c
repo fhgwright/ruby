@@ -152,6 +152,23 @@ int flock(int, int);
 # include <stdlib.h>
 #endif
 
+#if defined HAVE_REALPATH && defined __APPLE__ && \
+    __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1060
+/* realpath() on OSX < 10.6 doesn't implement automatic allocation */
+#include <sys/syslimits.h>
+static char *
+realpath_wrapper(const char *file_name, char *resolved_name)
+{
+    if (resolved_name == NULL) {
+        resolved_name = malloc(PATH_MAX);
+        if (resolved_name == NULL) return NULL;
+    }
+    return realpath(file_name, resolved_name);
+}
+#else
+#define realpath_wrapper realpath
+#endif
+
 #include "dln.h"
 #include "encindex.h"
 #include "id.h"
@@ -4440,7 +4457,8 @@ rb_check_realpath_internal(VALUE basedir, VALUE path, rb_encoding *origenc, enum
     }
     if (origenc) unresolved_path = TO_OSPATH(unresolved_path);
 
-    if ((resolved_ptr = realpath(RSTRING_PTR(unresolved_path), NULL)) == NULL) {
+    if ((resolved_ptr = realpath_wrapper(RSTRING_PTR(unresolved_path), NULL))
+        == NULL) {
         /* glibc realpath(3) does not allow /path/to/file.rb/../other_file.rb,
            returning ENOTDIR in that case.
            glibc realpath(3) can also return ENOENT for paths that exist,
