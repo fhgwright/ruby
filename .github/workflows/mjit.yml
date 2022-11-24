@@ -13,7 +13,7 @@ jobs:
         test_task: [ "check" ] # to make job names consistent
         jit_opts: [ "--jit", "--jit-wait" ]
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     steps:
       - name: Install libraries
@@ -42,7 +42,7 @@ jobs:
         run: |
           echo "JOBS=-j$((1 + $(nproc --all)))" >> $GITHUB_ENV
       - name: Autoconf
-        run: cd src && exec autoconf
+        run: cd src && exec autoreconf -i
       - name: configure
         run: |
           mkdir build
