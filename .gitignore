@@ -25,7 +25,6 @@
 *.so
 *.swp
 *.yarb
-*~
 .*.list
 .*.time
 .DS_Store
@@ -184,7 +183,6 @@ lcov*.info
 /ext/etc/constdefs.h
 
 # /ext/fiddle/
-/ext/fiddle/libffi-*
 
 # /ext/rbconfig/
 /ext/rbconfig/sizeof/sizes.c
