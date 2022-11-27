@@ -38,9 +38,7 @@ if $mswin || $mingw
 end
 
 Logging::message "=== Checking for required stuff... ===\n"
-# mkmf#pkg_config() looks to ignore PKG_CONFIG_PATH
-#result = pkg_config("openssl") && have_header("openssl/ssl.h")
-result = nil
+result = pkg_config("openssl") && have_header("openssl/ssl.h")
 
 def find_openssl_library
   if $mswin || $mingw
