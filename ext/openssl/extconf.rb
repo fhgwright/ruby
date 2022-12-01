@@ -34,9 +34,7 @@ if $mswin || $mingw
 end
 
 Logging::message "=== Checking for required stuff... ===\n"
-# mkmf#pkg_config() looks to ignore PKG_CONFIG_PATH
-#result = pkg_config("openssl") && have_header("openssl/ssl.h")
-result = nil
+result = pkg_config("openssl") && have_header("openssl/ssl.h")
 
 if $mingw
   append_cflags '-D_FORTIFY_SOURCE=2'
