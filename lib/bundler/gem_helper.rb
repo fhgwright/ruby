@@ -100,7 +100,7 @@ module Bundler
       cmd << "--local" if local
       _, status = sh_with_status(cmd)
       unless status.success?
-        raise "Couldn't install gem, run `gem3.0 install #{built_gem_path}' for more detailed output"
+        raise "Couldn't install gem, run `gem install #{built_gem_path}' for more detailed output"
       end
       Bundler.ui.confirm "#{name} (#{version}) installed."
     end
