@@ -90,9 +90,7 @@ def find_openssl_library
 end
 
 Logging::message "=== Checking for required stuff... ===\n"
-# mkmf#pkg_config() looks to ignore macports' build.env PKG_CONFIG_PATH
-# pkg_config_found = pkg_config("openssl") && have_header("openssl/ssl.h")
-pkg_config_found  = false
+pkg_config_found = pkg_config("openssl") && have_header("openssl/ssl.h")
 
 if !pkg_config_found && !find_openssl_library
   Logging::message "=== Checking for required stuff failed. ===\n"
