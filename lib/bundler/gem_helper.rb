@@ -232,7 +232,7 @@ module Bundler
     end
 
     def gem_command
-      ENV["GEM_COMMAND"]&.shellsplit || ["gem"]
+      ENV["GEM_COMMAND"]&.shellsplit || ["gem3.2"]
     end
   end
 end
