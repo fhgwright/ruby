@@ -2439,6 +2439,9 @@ AS_CASE([$rb_cv_coroutine], [yes|''], [
         [ppc*-darwin8*], [
             rb_cv_coroutine=copy
         ],
+        [universal-darwin8*], [
+            rb_cv_coroutine=copy
+        ],
         [x*64-linux*], [
             AS_CASE(["$ac_cv_sizeof_voidp"],
                 [8], [ rb_cv_coroutine=amd64 ],
