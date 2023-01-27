@@ -2747,7 +2747,15 @@ AS_IF([test "$with_dln_a_out" != yes], [
   AS_IF([test "$rb_cv_dlopen" = yes], [
     AS_CASE(["$target_os"],
       [darwin*], [
+        # The -no_fixup_chains is needed on macOS 12+ to avoid getting a
+        # warning on the -undefined dynamic_lookup, which in turn disables
+        # the latter here and breaks the build of ext/bigdecimal/util.
+        # Since options aren't cumulative here, the two options need to be
+        # tested together.  Older linkers may not support the added option,
+        # so we then try the original option alone.  This may result in
+        # a harmless duplicate.
 	for flag in \
+	  "-undefined dynamic_lookup -no_fixup_chains" \
 	  "-undefined dynamic_lookup" \
 	  "-multiply_defined suppress" \
 	  ; do
