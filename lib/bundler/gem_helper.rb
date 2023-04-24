@@ -210,7 +210,7 @@ module Bundler
     end
 
     def gem_command
-      ENV["GEM_COMMAND"] ? ENV["GEM_COMMAND"] : "gem"
+      ENV["GEM_COMMAND"] ? ENV["GEM_COMMAND"] : "gem2.7"
     end
   end
 end
