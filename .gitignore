@@ -4,14 +4,11 @@
 *.a
 *.bak
 *.bc
-*.bundle
 *.dSYM
-*.dmyh
 *.dylib
 *.elc
 *.i
 *.ii
-*.inc
 *.log
 *.o
 *.o.tmp
@@ -20,7 +17,6 @@
 *.orig
 *.pch
 *.pdb
-*.rbinc
 *.rej
 *.s
 *.sav
@@ -33,7 +29,6 @@
 .*.list
 .*.time
 .DS_Store
-.bundle
 .ccmalloc
 .ext
 .pc
@@ -60,12 +55,10 @@ lcov*.info
 /*.res
 /*.pc
 /*.rc
-/*_prelude.c
 /.downloaded-cache
 /.top-enc.mk
 /build*/
 /COPYING.LIB
-/ChangeLog
 /Doxyfile
 /GNUmakefile
 /README.atheos
@@ -84,7 +77,6 @@ lcov*.info
 /config.h.in
 /config.status
 /config.status.lineno
-/configure
 /coverage/simplecov
 /coverage/simplecov-html
 /coverage/doclie
@@ -97,32 +89,25 @@ lcov*.info
 /encdb.h
 /exts.mk
 /goruby
-/id.[ch]
 /largefile.h
 /lcov-c-out
 /lcov-rb-out
 /lcov-out
-/lex.c
 /libruby*.*
-/miniprelude.c
 /miniruby
 /newdate.rb
 /newline.c
 /newver.rb
-/parse.c
-/parse.h
 /patches
 /patches-master
 /pitest.rb
 /ppack
 /prelude.c
 /preview
-/probes.dmyh
 /probes.h
 /rbconfig.rb
 /rename2.h
 /repack
-/revision.h
 /revision.tmp
 /ripper.tmp.y
 /riscos
@@ -161,14 +146,12 @@ lcov*.info
 /enc/*.def
 /enc/*.exp
 /enc/*.lib
-/enc/jis/props.h
 /enc/unicode/data
 
 # /coroutine/
 !/coroutine/**/*.s
 
 # /enc/trans/
-/enc/trans/*.c
 /enc/trans/*.def
 /enc/trans/*.exp
 /enc/trans/*.lib
@@ -194,34 +177,22 @@ lcov*.info
 /ext/-test-/gems
 
 # /ext/etc/
-/ext/etc/constdefs.h
 
 # /ext/fiddle/
 /ext/fiddle/libffi-*
 
 # /ext/rbconfig/
-/ext/rbconfig/sizeof/sizes.c
-/ext/rbconfig/sizeof/limits.c
 
 # /ext/ripper/
-/ext/ripper/eventids1.c
-/ext/ripper/eventids1.h
 /ext/ripper/.eventids2-check
-/ext/ripper/eventids2table.c
-/ext/ripper/ripper_init.c
-/ext/ripper/ripper.*
 /ext/ripper/ids1
 /ext/ripper/ids2
 
 # /ext/socket/
 /ext/socket/constants.h
-/ext/socket/constdefs.h
-/ext/socket/constdefs.c
 
 # /gems
-/gems/*.gem
 /gems/src
-/gems/*-*
 
 # /lib/
 /lib/ruby/[1-9]*.*
@@ -235,16 +206,12 @@ lcov*.info
 /tool/bundler/*.lock
 
 # /tool/
-/tool/config.guess
-/tool/config.sub
 
 # /win32/
 /win32/*.ico
 
 # RJIT
 /include/ruby-*/*/rb_rjit_min_header-*.h
-/lib/ruby_vm/rjit/instruction.rb
-/lib/ruby_vm/rjit/instruction.rb
 /rjit_config.h
 /rb_rjit_header.h*
 
@@ -256,20 +223,7 @@ lcov*.info
 /wasm/tests/*.wasm
 
 # prism
-/lib/prism/compiler.rb
-/lib/prism/dispatcher.rb
 /lib/prism/dot_visitor.rb
-/lib/prism/dsl.rb
-/lib/prism/mutation_compiler.rb
-/lib/prism/node.rb
-/lib/prism/serialize.rb
-/lib/prism/visitor.rb
-/prism/api_node.c
-/prism/ast.h
-/prism/node.c
-/prism/prettyprint.c
-/prism/serialize.c
-/prism/token_type.c
 
 # tool/update-NEWS-gemlist.rb
 /bundled_gems.json
