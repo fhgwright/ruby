@@ -80,13 +80,10 @@ jobs:
           - { name: gcc-9,     env: { default_cc: gcc-9 } }
           - { name: gcc-8,     env: { default_cc: gcc-8 } }
           - { name: gcc-7,     env: { default_cc: gcc-7 } }
-          - { name: gcc-6,     env: { default_cc: gcc-6 } }
-          - { name: gcc-5,     env: { default_cc: gcc-5 } }
-          - { name: gcc-4.8,   env: { default_cc: gcc-4.8 } }
-          - name: 'gcc-11 LTO'
-            container: gcc-11
+          - name: 'gcc-13 LTO'
+            container: gcc-13
             env:
-              default_cc: 'gcc-11 -flto=auto -ffat-lto-objects'
+              default_cc: 'gcc-13 -flto=auto -ffat-lto-objects -Werror=lto-type-mismatch'
               optflags: '-O2'
             shared: disable
             # check: true
@@ -108,17 +105,15 @@ jobs:
           - { name: clang-12,  env: { default_cc: clang-12 } }
           - { name: clang-11,  env: { default_cc: clang-11 } }
           - { name: clang-10,  env: { default_cc: clang-10 } }
-          - { name: clang-9,   env: { default_cc: clang-9 } }
-          - { name: clang-8,   env: { default_cc: clang-8 } }
-          - { name: clang-7,   env: { default_cc: clang-7 } }
-          - { name: clang-6.0, env: { default_cc: clang-6.0 } }
-          - { name: clang-5.0, env: { default_cc: clang-5.0 } }
-          - { name: clang-4.0, env: { default_cc: clang-4.0 } }
-          - { name: clang-3.9, env: { default_cc: clang-3.9 } }
-          - name: 'clang-14 LTO'
-            container: clang-14
+          # llvm-objcopy<=9 doesn't have --wildcard. It compiles, but leaves Rust symbols in libyjit.o.
+          - { name: clang-9,   env: { default_cc: clang-9,   append_configure: '--disable-yjit' } }
+          - { name: clang-8,   env: { default_cc: clang-8,   append_configure: '--disable-yjit' } }
+          - { name: clang-7,   env: { default_cc: clang-7,   append_configure: '--disable-yjit' } }
+          - { name: clang-6.0, env: { default_cc: clang-6.0, append_configure: '--disable-yjit' } }
+          - name: 'clang-16 LTO'
+            container: clang-16
             env:
-              default_cc: 'clang-14 -flto=auto'
+              default_cc: 'clang-16 -flto=auto'
               optflags: '-O2'
             shared: disable
             # check: true
@@ -184,7 +179,11 @@ jobs:
 #         - { name: VM_CHECK_MODE,                  env: { cppflags: '-DVM_CHECK_MODE' } }
 
           - { name: USE_EMBED_CI=0,                 env: { cppflags: '-DUSE_EMBED_CI=0' } }
-          - { name: USE_FLONUM=0,                   env: { cppflags: '-DUSE_FLONUM=0' } }
+          - name: USE_FLONUM=0,
+            env:
+              cppflags: '-DUSE_FLONUM=0'
+              # yjit requires FLONUM for the pointer tagging scheme
+              append_configure: '--disable-yjit'
 #         - { name: USE_GC_MALLOC_OBJ_INFO_DETAILS, env: { cppflags: '-DUSE_GC_MALLOC_OBJ_INFO_DETAILS' } }
           - { name: USE_LAZY_LOAD,                  env: { cppflags: '-DUSE_LAZY_LOAD' } }
 #         - { name: USE_RINCGC=0,                   env: { cppflags: '-DUSE_RINCGC=0' } }
