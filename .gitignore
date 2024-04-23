@@ -4,12 +4,12 @@
 *.a
 *.bak
 *.bc
-*.bundle
 *.dSYM
 *.dmyh
 *.dylib
 *.elc
 *.i
+*.inc
 *.log
 *.o
 *.obj
@@ -25,10 +25,10 @@
 *.so
 *.swp
 *.yarb
+*~
 .*.list
 .*.time
 .DS_Store
-.bundle
 .ccmalloc
 .ext
 .pc
@@ -36,6 +36,7 @@
 .svn
 .time
 .ruby-version
+Makefile
 cygruby*.def
 extconf.h
 y.output
@@ -183,6 +184,7 @@ lcov*.info
 /ext/etc/constdefs.h
 
 # /ext/fiddle/
+/ext/fiddle/libffi-*
 
 # /ext/rbconfig/
 /ext/rbconfig/sizeof/sizes.c
@@ -202,9 +204,7 @@ lcov*.info
 /ext/socket/constdefs.c
 
 # /gems
-/gems/*.gem
 /gems/src
-/gems/*-*
 
 # /lib/
 /lib/ruby/[1-9]*.*
