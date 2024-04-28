@@ -503,7 +503,8 @@ rb_vmdebug_thread_dump_state(FILE *errout, VALUE self)
 # ifdef HAVE_LIBUNWIND
 #  undef backtrace
 #  define backtrace unw_backtrace
-# elif defined(__APPLE__) && defined(HAVE_LIBUNWIND_H)
+# elif defined(__APPLE__) && defined(HAVE_LIBUNWIND_H) \
+       && MAC_OS_X_VERSION_MIN_REQUIRED >= 1060
 #  define UNW_LOCAL_ONLY
 #  include <libunwind.h>
 #  include <sys/mman.h>
