@@ -29,3 +29,15 @@ static DEFINE_FINISH_FUNC_FROM_FINAL(SHA512)
 #undef SHA512_Finish
 #define SHA512_Update rb_digest_SHA512_update
 #define SHA512_Finish rb_digest_SHA512_finish
+
+/*
+ * Pre-10.6 defines are with args, which don't match the argless use in
+ * the function pointer inits.  Thus, we redefine SHA*_Init as well.
+ * This is a NOP on 10.6+.
+ */
+#undef SHA256_Init
+#define SHA256_Init CC_SHA256_Init
+#undef SHA384_Init
+#define SHA384_Init CC_SHA384_Init
+#undef SHA512_Init
+#define SHA512_Init CC_SHA512_Init
