@@ -4,7 +4,6 @@
 *.a
 *.bak
 *.bc
-*.bundle
 *.dSYM
 *.dmyh
 *.dylib
@@ -33,7 +32,6 @@
 .*.list
 .*.time
 .DS_Store
-.bundle
 .ccmalloc
 .ext
 .pc
@@ -221,9 +219,7 @@ lcov*.info
 /ext/socket/constdefs.c
 
 # /gems
-/gems/*.gem
 /gems/src
-/gems/*-*
 
 # /lib/
 /lib/ruby/[1-9]*.*
