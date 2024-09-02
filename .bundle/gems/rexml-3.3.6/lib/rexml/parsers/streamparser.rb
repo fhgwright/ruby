@@ -7,11 +7,15 @@ module REXML
       def initialize source, listener
         @listener = listener
         @parser = BaseParser.new( source )
-        @tag_stack = []
+        @entities = {}
       end
 
       def add_listener( listener )
         @parser.add_listener( listener )
+      end
+
+      def entity_expansion_count
+        @parser.entity_expansion_count
       end
 
       def parse
@@ -20,24 +24,17 @@ module REXML
           event = @parser.pull
           case event[0]
           when :end_document
-            unless @tag_stack.empty?
-              tag_path = "/" + @tag_stack.join("/")
-              raise ParseException.new("Missing end tag for '#{tag_path}'",
-                                       @parser.source)
-            end
             return
           when :start_element
-            @tag_stack << event[1]
             attrs = event[2].each do |n, v|
               event[2][n] = @parser.unnormalize( v )
             end
             @listener.tag_start( event[1], attrs )
           when :end_element
             @listener.tag_end( event[1] )
-            @tag_stack.pop
           when :text
-            normalized = @parser.unnormalize( event[1] )
-            @listener.text( normalized )
+            unnormalized = @parser.unnormalize( event[1], @entities )
+            @listener.text( unnormalized )
           when :processing_instruction
             @listener.instruction( *event[1,2] )
           when :start_doctype
@@ -48,6 +45,7 @@ module REXML
           when :comment, :attlistdecl, :cdata, :xmldecl, :elementdecl
             @listener.send( event[0].to_s, *event[1..-1] )
           when :entitydecl, :notationdecl
+            @entities[ event[1] ] = event[2] if event.size == 3
             @listener.send( event[0].to_s, event[1..-1] )
           when :externalentity
             entity_reference = event[1]

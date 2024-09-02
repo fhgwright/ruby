@@ -1,5 +1,246 @@
 # News
 
+## 3.3.6 - 2024-08-22 {#version-3-3-6}
+
+### Improvements
+
+  * Removed duplicated entity expansions for performance.
+    * GH-194
+    * Patch by Viktor Ivarsson.
+
+  * Improved namespace conflicted attribute check performance. It was
+    too slow for deep elements.
+    * Reported by l33thaxor.
+
+### Fixes
+
+  * Fixed a bug that default entity expansions are counted for
+    security check. Default entity expansions should not be counted
+    because they don't have a security risk.
+    * GH-198
+    * GH-199
+    * Patch Viktor Ivarsson
+
+  * Fixed a parser bug that parameter entity references in internal
+    subsets are expanded. It's not allowed in the XML specification.
+    * GH-191
+    * Patch by NAITOH Jun.
+
+  * Fixed a stream parser bug that user-defined entity references in
+    text aren't expanded.
+    * GH-200
+    * Patch by NAITOH Jun.
+
+### Thanks
+
+  * Viktor Ivarsson
+
+  * NAITOH Jun
+
+  * l33thaxor
+
+## 3.3.5 - 2024-08-12 {#version-3-3-5}
+
+### Fixes
+
+  * Fixed a bug that `REXML::Security.entity_expansion_text_limit`
+    check has wrong text size calculation in SAX and pull parsers.
+    * GH-193
+    * GH-195
+    * Reported by Viktor Ivarsson.
+    * Patch by NAITOH Jun.
+
+### Thanks
+
+  * Viktor Ivarsson
+
+  * NAITOH Jun
+
+## 3.3.4 - 2024-08-01 {#version-3-3-4}
+
+### Fixes
+
+  * Fixed a bug that `REXML::Security` isn't defined when
+    `REXML::Parsers::StreamParser` is used and
+    `rexml/parsers/streamparser` is only required.
+    * GH-189
+    * Patch by takuya kodama.
+
+### Thanks
+
+  * takuya kodama
+
+## 3.3.3 - 2024-08-01 {#version-3-3-3}
+
+### Improvements
+
+  * Added support for detecting invalid XML that has unsupported
+    content before root element
+    * GH-184
+    * Patch by NAITOH Jun.
+
+  * Added support for `REXML::Security.entity_expansion_limit=` and
+    `REXML::Security.entity_expansion_text_limit=` in SAX2 and pull
+    parsers
+    * GH-187
+    * Patch by NAITOH Jun.
+
+  * Added more tests for invalid XMLs.
+    * GH-183
+    * Patch by Watson.
+
+  * Added more performance tests.
+    * Patch by Watson.
+
+  * Improved parse performance.
+    * GH-186
+    * Patch by tomoya ishida.
+
+### Thanks
+
+  * NAITOH Jun
+
+  * Watson
+
+  * tomoya ishida
+
+## 3.3.2 - 2024-07-16 {#version-3-3-2}
+
+### Improvements
+
+  * Improved parse performance.
+    * GH-160
+    * Patch by NAITOH Jun.
+
+  * Improved parse performance.
+    * GH-169
+    * GH-170
+    * GH-171
+    * GH-172
+    * GH-173
+    * GH-174
+    * GH-175
+    * GH-176
+    * GH-177
+    * Patch by Watson.
+
+  * Added support for raising a parse exception when an XML has extra
+    content after the root element.
+    * GH-161
+    * Patch by NAITOH Jun.
+
+  * Added support for raising a parse exception when an XML
+    declaration exists in wrong position.
+    * GH-162
+    * Patch by NAITOH Jun.
+
+  * Removed needless a space after XML declaration in pretty print mode.
+    * GH-164
+    * Patch by NAITOH Jun.
+
+  * Stopped to emit `:text` event after the root element.
+    * GH-167
+    * Patch by NAITOH Jun.
+
+### Fixes
+
+  * Fixed a bug that SAX2 parser doesn't expand predefined entities for
+    `characters` callback.
+    * GH-168
+    * Patch by NAITOH Jun.
+
+### Thanks
+
+  * NAITOH Jun
+
+  * Watson
+
+## 3.3.1 - 2024-06-25 {#version-3-3-1}
+
+### Improvements
+
+  * Added support for detecting malformed top-level comments.
+    * GH-145
+    * Patch by Hiroya Fujinami.
+
+  * Improved `REXML::Element#attribute` performance.
+    * GH-146
+    * Patch by Hiroya Fujinami.
+
+  * Added support for detecting malformed `<!-->` comments.
+    * GH-147
+    * Patch by Hiroya Fujinami.
+
+  * Added support for detecting unclosed `DOCTYPE`.
+    * GH-152
+    * Patch by Hiroya Fujinami.
+
+  * Added `changlog_uri` metadata to gemspec.
+    * GH-156
+    * Patch by fynsta.
+
+  * Improved parse performance.
+    * GH-157
+    * GH-158
+    * Patch by NAITOH Jun.
+
+### Fixes
+
+  * Fixed a bug that large XML can't be parsed.
+    * GH-154
+    * Patch by NAITOH Jun.
+
+  * Fixed a bug that private constants are visible.
+    * GH-155
+    * Patch by NAITOH Jun.
+
+### Thanks
+
+  * Hiroya Fujinami
+
+  * NAITOH Jun
+
+  * fynsta
+
+## 3.3.0 - 2024-06-11 {#version-3-3-0}
+
+### Improvements
+
+  * Added support for strscan 0.7.0 installed with Ruby 2.6.
+    * GH-142
+    * Reported by Fernando Trigoso.
+
+### Thanks
+
+  * Fernando Trigoso
+
+## 3.2.9 - 2024-06-09 {#version-3-2-9}
+
+### Improvements
+
+  * Added support for old strscan.
+    * GH-132
+    * Reported by Adam.
+
+  * Improved attribute value parse performance.
+    * GH-135
+    * Patch by NAITOH Jun.
+
+  * Improved `REXML::Node#each_recursive` performance.
+    * GH-134
+    * GH-139
+    * Patch by Hiroya Fujinami.
+
+  * Improved text parse performance.
+    * Reported by mprogrammer.
+
+### Thanks
+
+  * Adam
+  * NAITOH Jun
+  * Hiroya Fujinami
+  * mprogrammer
+
 ## 3.2.8 - 2024-05-16 {#version-3-2-8}
 
 ### Fixes
@@ -30,7 +271,7 @@
 
   * Improved parse performance when an attribute has many `<`s.
 
-    * GH-124
+    * GH-126
 
 ### Fixes
 
@@ -64,7 +305,6 @@
   * flatisland
   * jcavalieri
   * DuKewu
-
 
 ## 3.2.6 - 2023-07-27 {#version-3-2-6}
 

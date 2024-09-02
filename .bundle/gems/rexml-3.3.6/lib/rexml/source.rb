@@ -1,8 +1,28 @@
 # coding: US-ASCII
 # frozen_string_literal: false
+
+require "strscan"
+
 require_relative 'encoding'
 
 module REXML
+  if StringScanner::Version < "1.0.0"
+    module StringScannerCheckScanString
+      refine StringScanner do
+        def check(pattern)
+          pattern = /#{Regexp.escape(pattern)}/ if pattern.is_a?(String)
+          super(pattern)
+        end
+
+        def scan(pattern)
+          pattern = /#{Regexp.escape(pattern)}/ if pattern.is_a?(String)
+          super(pattern)
+        end
+      end
+    end
+    using StringScannerCheckScanString
+  end
+
   # Generates Source-s.  USE THIS CLASS.
   class SourceFactory
     # Generates a Source object
@@ -34,6 +54,16 @@ module REXML
     attr_reader :line
     attr_reader :encoding
 
+    module Private
+      SCANNER_RESET_SIZE = 100000
+      PRE_DEFINED_TERM_PATTERNS = {}
+      pre_defined_terms = ["'", '"', "<"]
+      pre_defined_terms.each do |term|
+        PRE_DEFINED_TERM_PATTERNS[term] = /#{Regexp.escape(term)}/
+      end
+    end
+    private_constant :Private
+
     # Constructor
     # @param arg must be a String, and should be a valid XML document
     # @param encoding if non-null, sets the encoding of the source to this
@@ -54,6 +84,12 @@ module REXML
       @scanner.rest
     end
 
+    def drop_parsed_content
+      if @scanner.pos > Private::SCANNER_RESET_SIZE
+        @scanner.string = @scanner.rest
+      end
+    end
+
     def buffer_encoding=(encoding)
       @scanner.string.force_encoding(encoding)
     end
@@ -69,7 +105,13 @@ module REXML
     end
 
     def read_until(term)
-      @scanner.scan_until(Regexp.union(term)) or @scanner.rest
+      pattern = Private::PRE_DEFINED_TERM_PATTERNS[term] || /#{Regexp.escape(term)}/
+      data = @scanner.scan_until(pattern)
+      unless data
+        data = @scanner.rest
+        @scanner.pos = @scanner.string.bytesize
+      end
+      data
     end
 
     def ensure_buffer
@@ -162,9 +204,20 @@ module REXML
       end
     end
 
-    def read(term = nil)
+    def read(term = nil, min_bytes = 1)
+      term = encode(term) if term
       begin
-        @scanner << readline(term)
+        str = readline(term)
+        @scanner << str
+        read_bytes = str.bytesize
+        begin
+          while read_bytes < min_bytes
+            str = readline(term)
+            @scanner << str
+            read_bytes += str.bytesize
+          end
+        rescue IOError
+        end
         true
       rescue Exception, NameError
         @source = nil
@@ -173,16 +226,20 @@ module REXML
     end
 
     def read_until(term)
-      pattern = Regexp.union(term)
-      begin
-        until str = @scanner.scan_until(pattern)
-          @scanner << readline(term)
-        end
-      rescue EOFError
-        @scanner.rest
-      else
+      pattern = Private::PRE_DEFINED_TERM_PATTERNS[term] || /#{Regexp.escape(term)}/
+      term = encode(term)
+      until str = @scanner.scan_until(pattern)
+        break if @source.nil?
+        break if @source.eof?
+        @scanner << readline(term)
+      end
+      if str
         read if @scanner.eos? and !@source.eof?
         str
+      else
+        rest = @scanner.rest
+        @scanner.pos = @scanner.string.bytesize
+        rest
       end
     end
 
@@ -190,10 +247,9 @@ module REXML
       read if @scanner.eos? && @source
     end
 
-    # Note: When specifying a string for 'pattern', it must not include '>' except in the following formats:
-    # - ">"
-    # - "XXX>" (X is any string excluding '>')
     def match( pattern, cons=false )
+      # To avoid performance issue, we need to increase bytes to read per scan
+      min_bytes = 1
       while true
         if cons
           md = @scanner.scan(pattern)
@@ -203,7 +259,8 @@ module REXML
         break if md
         return nil if pattern.is_a?(String)
         return nil if @source.nil?
-        return nil unless read
+        return nil unless read(nil, min_bytes)
+        min_bytes *= 2
       end
 
       md.nil? ? nil : @scanner
