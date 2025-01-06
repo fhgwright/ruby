@@ -299,10 +299,30 @@ rb_CFString_class_initialize_before_fork(void)
     long len = sizeof(small_str) - 1;
 
     const CFAllocatorRef alloc = kCFAllocatorDefault;
+
+/*
+ * The 'NoCopy' version of CFStringCreateWithBytes didn't appear until
+ * 10.5, though the original CFStringCreateWithBytes has been available
+ * since 10.0.  Hence, we need to use CFStringCreateWithBytes on OS versions
+ * earlier than 10.5.
+ *
+ * There's probably no significant benefit to using the 'NoCopy' version
+ * in this context, so making that substitution unconditionally would
+ * probably be fine (and simpler), but by the principle of least change,
+ * we limit the substitution to earlier OS versions (i.e., 10.4).
+ */
+# if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050
     CFStringRef s = CFStringCreateWithBytesNoCopy(alloc,
                                                   (const UInt8 *)small_str,
                                                   len, kCFStringEncodingUTF8,
                                                   FALSE, kCFAllocatorNull);
+# else /* 10.4 */
+    CFStringRef s = CFStringCreateWithBytes(alloc,
+                                            (const UInt8 *)small_str,
+                                            len, kCFStringEncodingUTF8,
+                                            FALSE);
+# endif /* 10.4 */
+
     CFMutableStringRef m = CFStringCreateMutableCopy(alloc, len, s);
     CFRelease(m);
     CFRelease(s);
@@ -314,10 +334,19 @@ rb_str_append_normalized_ospath(VALUE str, const char *ptr, long len)
 {
     CFIndex buflen = 0;
     CFRange all;
+
+/* See above comment regarding CFStringCreateWithBytes[NoCopy]. */
+# if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050
     CFStringRef s = CFStringCreateWithBytesNoCopy(kCFAllocatorDefault,
                                                   (const UInt8 *)ptr, len,
                                                   kCFStringEncodingUTF8, FALSE,
                                                   kCFAllocatorNull);
+# else /* 10.4 */
+    CFStringRef s = CFStringCreateWithBytes(kCFAllocatorDefault,
+                                            (const UInt8 *)ptr, len,
+                                            kCFStringEncodingUTF8, FALSE);
+# endif /* 10.4 */
+
     CFMutableStringRef m = CFStringCreateMutableCopy(kCFAllocatorDefault, len, s);
     long oldlen = RSTRING_LEN(str);
 
