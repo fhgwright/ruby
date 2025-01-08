@@ -446,7 +446,8 @@ AS_CASE(["$build_os"],
 	      -e '^ld: warning: text-based stub file' \
 	      -e '^ld: warning: -multiply_defined is obsolete' \
 	   >/dev/null], [
-	suppress_ld_waring=yes
+	CC_WRAPPER=`cd -P "${tooldir}" && pwd`/darwin-cc
+	CC="$CC_WRAPPER $CC"
     ])
     rm -fr conftest*
     test $suppress_ld_waring = yes && warnflags="${warnflags:+${warnflags} }-Wl,-w"
