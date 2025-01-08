@@ -275,9 +275,27 @@ static CFMutableStringRef
 mutable_CFString_new(CFStringRef *s, const char *ptr, long len)
 {
     const CFAllocatorRef alloc = kCFAllocatorDefault;
+
+/*
+ * The 'NoCopy' version of CFStringCreateWithBytes didn't appear until
+ * 10.5, though the original CFStringCreateWithBytes has been available
+ * since 10.0.  Hence, we need to use CFStringCreateWithBytes on OS versions
+ * earlier than 10.5.
+ *
+ * There's probably no significant benefit to using the 'NoCopy' version
+ * in this context, so making that substitution unconditionally would
+ * probably be fine (and simpler), but by the principle of least change,
+ * we limit the substitution to earlier OS versions (i.e., 10.4).
+ */
+# if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050
     *s = CFStringCreateWithBytesNoCopy(alloc, (const UInt8 *)ptr, len,
                                        kCFStringEncodingUTF8, FALSE,
                                        kCFAllocatorNull);
+# else /* 10.4 */
+    *s = CFStringCreateWithBytes(alloc, (const UInt8 *)ptr, len,
+                                 kCFStringEncodingUTF8, FALSE);
+# endif /* 10.4 */
+
     return CFStringCreateMutableCopy(alloc, len, *s);
 }
 
