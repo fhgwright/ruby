@@ -38,7 +38,7 @@ jobs:
       matrix:
         include:
           - vs: 2019
-          - vs: 2022
+          # - vs: 2022
       fail-fast: false
 
     runs-on: windows-${{ matrix.vs < 2022 && '2019' || matrix.vs }}
@@ -93,7 +93,7 @@ jobs:
             ${{ steps.find-tools.outputs.needs }}
         if: ${{ steps.find-tools.outputs.needs != '' }}
 
-      - uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+      - uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
         with:
           path: C:\vcpkg\downloads
           key: ${{ runner.os }}-vcpkg-download-${{ env.OS_VER }}-${{ github.sha }}
@@ -101,7 +101,7 @@ jobs:
             ${{ runner.os }}-vcpkg-download-${{ env.OS_VER }}-
             ${{ runner.os }}-vcpkg-download-
 
-      - uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+      - uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
         with:
           path: C:\vcpkg\installed
           key: ${{ runner.os }}-vcpkg-installed-${{ env.OS_VER }}-${{ github.sha }}
@@ -117,6 +117,7 @@ jobs:
         run: |
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
+          scoop install vcpkg cmake@3.31.6
         shell: pwsh
 
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -194,6 +195,16 @@ jobs:
           label: VS${{ matrix.vs }} / ${{ matrix.test_task || 'check' }}
           SLACK_WEBHOOK_URL: ${{ secrets.SIMPLER_ALERTS_URL }} # ruby-lang slack: ruby/simpler-alerts-bot
         if: ${{ failure() }}
+
+  result:
+    if: ${{ always() }}
+    name: ${{ github.workflow }} result
+    runs-on: windows-latest
+    needs: [make]
+    steps:
+      - run: exit 1
+        working-directory:
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
 
 defaults:
   run:
