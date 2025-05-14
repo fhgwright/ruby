@@ -25,7 +25,7 @@ jobs:
     name: cargo test
 
     # GitHub Action's image seems to already contain a Rust 1.58.0.
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     if: >-
       ${{!(false
@@ -36,7 +36,7 @@ jobs:
       )}}
 
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       # For now we can't run cargo test --offline because it complains about the
       # capstone dependency, even though the dependency is optional
@@ -57,7 +57,7 @@ jobs:
     name: cargo clippy
 
     # GitHub Action's image seems to already contain a Rust 1.58.0.
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     if: >-
       ${{!(false
@@ -68,7 +68,7 @@ jobs:
       )}}
 
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       # Check that we don't have linting errors in release mode, too
       - run: cargo clippy --all-targets --all-features
@@ -81,7 +81,8 @@ jobs:
         include:
           - test_task: 'yjit-bindgen'
             hint: 'To fix: use patch in logs'
-            configure: '--with-gcc=clang-12 --enable-yjit=dev'
+            configure: '--with-gcc=clang-14 --enable-yjit=dev'
+            libclang_path: '/usr/lib/llvm-14/lib/libclang.so.1'
 
           - test_task: 'check'
             # YJIT should be automatically built in release mode on x86-64 Linux with rustc present
@@ -114,7 +115,7 @@ jobs:
       BUNDLE_JOBS: 8 # for yjit-bench
       RUST_BACKTRACE: 1
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     if: >-
       ${{!(false
@@ -127,14 +128,14 @@ jobs:
       )}}
 
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           sparse-checkout-cone-mode: false
           sparse-checkout: /.github
 
       - uses: ./.github/actions/setup/ubuntu
 
-      - uses: ruby/setup-ruby@a6e6f86333f0a2523ece813039b8b4be04560854 # v1.190.0
+      - uses: ruby/setup-ruby@f41e084df884422b269f4c01c3748a9df4431a75 # v1.236.0
         with:
           ruby-version: '3.0'
           bundler: none
@@ -172,7 +173,7 @@ jobs:
       - name: Set up Launchable
         uses: ./.github/actions/launchable/setup
         with:
-          os: ubuntu-20.04
+          os: ubuntu-22.04
           test-opts: ${{ matrix.configure }}
           launchable-token: ${{ secrets.LAUNCHABLE_TOKEN }}
           builddir: build
@@ -192,6 +193,7 @@ jobs:
           PRECHECK_BUNDLED_GEMS: 'no'
           SYNTAX_SUGGEST_TIMEOUT: '5'
           YJIT_BINDGEN_DIFF_OPTS: '--exit-code'
+          LIBCLANG_PATH: ${{ matrix.libclang_path }}
         continue-on-error: ${{ matrix.continue-on-test_task || false }}
 
       - name: Show ${{ github.event.pull_request.base.ref }} GitHub URL for yjit-bench comparison
