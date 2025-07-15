@@ -350,6 +350,7 @@ module DEBUGGER__
           next if tp.path.start_with?(__dir__)
           next if tp.path.start_with?('<internal:trace_point>')
           next unless File.exist?(tp.path) if CONFIG[:skip_nosrc]
+          next if skip_internal_path?(tp.path)
           loc = caller_locations(1, 1).first
           next if skip_location?(loc)
           next if iter && (iter -= 1) > 0
@@ -369,6 +370,7 @@ module DEBUGGER__
           next if tp.path.start_with?(__dir__)
           next if tp.path.start_with?('<internal:trace_point>')
           next unless File.exist?(tp.path) if CONFIG[:skip_nosrc]
+          next if skip_internal_path?(tp.path)
           loc = caller_locations(1, 1).first
           next if skip_location?(loc)
           next if iter && (iter -= 1) > 0
@@ -1079,13 +1081,13 @@ module DEBUGGER__
           when :up
             if @current_frame_index + 1 < @target_frames.size
               @current_frame_index += 1
-              show_src max_lines: 1
+              show_src max_lines: CONFIG[:show_src_lines_frame]
               show_frame(@current_frame_index)
             end
           when :down
             if @current_frame_index > 0
               @current_frame_index -= 1
-              show_src max_lines: 1
+              show_src max_lines: CONFIG[:show_src_lines_frame]
               show_frame(@current_frame_index)
             end
           when :set
@@ -1097,7 +1099,7 @@ module DEBUGGER__
                 puts "out of frame index: #{index}"
               end
             end
-            show_src max_lines: 1
+            show_src max_lines: CONFIG[:show_src_lines_frame]
             show_frame(@current_frame_index)
           else
             raise "unsupported frame operation: #{arg.inspect}"

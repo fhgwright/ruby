@@ -153,21 +153,28 @@ module DEBUGGER__
     end
 
     def history_file
-      history_file = CONFIG[:history_file]
-
-      if !history_file.empty?
-        File.expand_path(history_file)
+      case
+      when (path = CONFIG[:history_file]) && !path.empty?
+        path = File.expand_path(path)
+      when (path = File.expand_path("~/.rdbg_history")) && File.exist?(path) # for compatibility
+        # path
       else
-        history_file
+        state_dir = ENV['XDG_STATE_HOME'] || File.join(Dir.home, '.local', 'state')
+        path = File.join(File.expand_path(state_dir), 'rdbg', 'history')
       end
+
+      FileUtils.mkdir_p(File.dirname(path)) unless File.exist?(path)
+      path
     end
 
     FH = "# Today's OMIKUJI: "
 
     def read_history_file
-      if history && File.exist?(path = history_file)
+      if history && File.exist?(path = history_file())
         f = (['', 'DAI-', 'CHU-', 'SHO-'].map{|e| e+'KICHI'}+['KYO']).sample
-        ["#{FH}#{f}".dup] + File.readlines(path)
+        # Read history file and scrub invalid characters to prevent encoding errors
+        lines = File.readlines(path).map(&:scrub)
+        ["#{FH}#{f}".dup] + lines
       else
         []
       end
@@ -186,15 +193,17 @@ module DEBUGGER__
     def deactivate
       if history && @init_history_lines
         added_records = history.to_a[@init_history_lines .. -1]
-        path = history_file
+        path = history_file()
         max = CONFIG[:save_history]
 
         if !added_records.empty? && !path.empty?
           orig_records = read_history_file
-          open(history_file, 'w'){|f|
+          open(history_file(), 'w'){|f|
             (orig_records + added_records).last(max).each{|line|
-              if !line.start_with?(FH) && !line.strip.empty?
-                f.puts line.strip
+              # Use scrub to handle encoding issues gracefully
+              scrubbed_line = line.scrub.strip
+              if !line.start_with?(FH) && !scrubbed_line.empty?
+                f.puts scrubbed_line
               end
             }
           }
@@ -204,6 +213,8 @@ module DEBUGGER__
 
     def load_history
       read_history_file.each{|line|
+        # Use scrub to handle encoding issues gracefully, then strip
+        line.scrub!
         line.strip!
         history << line unless line.empty?
       } if history.empty?
