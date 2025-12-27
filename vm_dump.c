@@ -793,7 +793,7 @@ backtrace(void **trace, int size)
 
     unw_getcontext(&uc);
     unw_init_local(&cursor, &uc);
-#  if defined(__x86_64__)
+#  if defined(__x86_64__) || defined(__i386__)
     while (unw_step(&cursor) > 0) {
         unw_get_reg(&cursor, UNW_REG_IP, &ip);
         trace[n++] = (void *)ip;
@@ -808,6 +808,7 @@ backtrace(void **trace, int size)
     return n;
 darwin_sigtramp:
     /* darwin's bundled libunwind doesn't support signal trampoline */
+#   if defined(__x86_64__)  /* Only x86_64 case is implemented */
     {
         ucontext_t *uctx;
         char vec[1];
@@ -877,6 +878,8 @@ darwin_sigtramp:
         unw_get_reg(&cursor, UNW_REG_IP, &ip);
         trace[n++] = (void *)ip;
     }
+    /* TODO: Implement i386 equivalent of the above */
+#   endif  /* x86_64 (i386 currently just bails here) */
     return n;
 
 #  elif defined(__arm64__) || defined(__POWERPC__)
