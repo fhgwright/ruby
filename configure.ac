@@ -4781,11 +4781,6 @@ AC_ARG_WITH(destdir,
 	    [DESTDIR="$withval"])
 AC_SUBST(DESTDIR)
 
-AS_IF([test "x$load_relative:$DESTDIR" = xyes:], [
-    AS_IF([test "x$prefix" = xNONE], [DESTDIR="$ac_default_prefix"], [DESTDIR="$prefix"])
-    prefix=/.
-])
-
 AC_OUTPUT
 }
 
