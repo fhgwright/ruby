@@ -51,9 +51,14 @@ jobs:
 
     name: Windows ${{ matrix.os }}/Visual C++ ${{ matrix.vc }} (${{ matrix.test_task }})
 
+    permissions:
+      contents: read
+      packages: write
+
     env:
       GITPULLOPTIONS: --no-tags origin ${{ github.ref }}
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.target || 'x64' }}-windows
+      FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
 
     steps:
       - run: md build
@@ -80,32 +85,33 @@ jobs:
 
       - name: Install tools with scoop
         run: |
+          if ((vcpkg.exe help install) -match "manifest") { exit }
           Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
           iwr -useb get.scoop.sh | iex
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
           scoop install vcpkg
-          scoop install uutils-coreutils@0.5.0
         shell: pwsh
 
-      - name: Restore vcpkg artifact
-        id: restore-vcpkg
-        uses: actions/cache/restore@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
-        with:
-          path: src\vcpkg_installed
-          key: windows-${{ matrix.os }}-vcpkg-${{ hashFiles('src/vcpkg.json') }}
+      - name: Set up vcpkg binary cache
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FEED_OWNER: ${{ github.repository_owner }}
+          # The GITHUB_TOKEN of pull_request events (forks, dependabot) is
+          # read-only; packages are uploaded on push and merge_group only.
+          FEED_MODE: ${{ github.event_name != 'pull_request' && 'readwrite' || 'read' }}
+        run: |
+          $nuget = (vcpkg fetch nuget) | Select-Object -Last 1
+          & $nuget sources add -Source $Env:FEED_URL -StorePasswordInClearText `
+            -Name GitHubPackages -UserName $Env:FEED_OWNER -Password $Env:GH_TOKEN
+          & $nuget setapikey $Env:GH_TOKEN -Source $Env:FEED_URL
+          "VCPKG_BINARY_SOURCES=clear;nuget,$Env:FEED_URL,$Env:FEED_MODE" >> $Env:GITHUB_ENV
 
       - name: Install libraries with vcpkg
         run: |
-          vcpkg install --vcpkg-root=%USERPROFILE%\scoop\apps\vcpkg\current
+          git -C "%VCPKG_INSTALLATION_ROOT%" pull --quiet
+          vcpkg install
         working-directory: src
-        if: ${{ ! steps.restore-vcpkg.outputs.cache-hit }}
-
-      - name: Save vcpkg artifact
-        uses: actions/cache/save@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
-        with:
-          path: src\vcpkg_installed
-          key: windows-${{ matrix.os }}-vcpkg-${{ hashFiles('src/vcpkg.json') }}
-        if: ${{ ! steps.restore-vcpkg.outputs.cache-hit && (github.ref_name == 'master' || startsWith(github.ref_name, 'ruby_')) }}
 
       - name: setup env
         # Available Ruby versions: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md#ruby
@@ -113,7 +119,7 @@ jobs:
         # https://github.com/actions/virtual-environments/issues/712#issuecomment-613004302
         run: |
           ::- Set up VC ${{ matrix.vc }}
-          set | coreutils sort > old.env
+          set > old.env
           call ..\src\win32\vssetup.cmd ^
             -arch=${{ matrix.target || 'amd64' }} ^
             ${{ matrix.vcvars && '-vcvars_ver=' || '' }}${{ matrix.vcvars }}
@@ -123,9 +129,17 @@ jobs:
           set MAKEFLAGS=l
           set /a TEST_JOBS=(15 * %NUMBER_OF_PROCESSORS% / 10) > nul
           set RUBY_OPT_DIR=%GITHUB_WORKSPACE:\=/%/src/vcpkg_installed/%VCPKG_DEFAULT_TRIPLET%
-          set | coreutils sort > new.env
-          coreutils comm -13 old.env new.env >> %GITHUB_ENV%
+          set > new.env
+
+      - name: update env
+        shell: pwsh
+        run: |
+          $old = (Get-Content old.env); $new = (Get-Content new.env)
           del *.env
+          Compare-Object $old $new |
+            Where-Object { $_.SideIndicator -eq '=>' } |
+            Select-Object -ExpandProperty InputObject |
+            Add-Content -Path $env:GITHUB_ENV
 
       - name: baseruby version
         run: ruby -v
