@@ -263,7 +263,7 @@
  * range analysis so it can prune impossible paths. Use it to communicate an
  * invariant the caller guarantees but that the compiler cannot otherwise prove.
  */
-#if defined(__clang__)
+#if defined(__clang__) && (__clang_major__ >= 7)
     #define PRISM_ASSUME(expr_) __builtin_assume(expr_)
 #elif defined(_MSC_VER)
     #define PRISM_ASSUME(expr_) __assume(expr_)
