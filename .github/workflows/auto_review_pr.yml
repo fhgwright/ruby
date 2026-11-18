@@ -1,0 +1,33 @@
+name: Auto Review PR
+on:
+  pull_request_target:
+    types: [opened, ready_for_review, reopened]
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  auto-review-pr:
+    name: Auto Review PR
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'ruby/ruby' && github.base_ref == 'master' }}
+
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: '3.4'
+          bundler: none
+
+      - name: Auto Review PR
+        run: ruby tool/auto_review_pr.rb "$GITHUB_PR_NUMBER"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
