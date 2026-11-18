@@ -30,15 +30,12 @@ jobs:
           - test_task: check
             os: macos-15
             configure_args: '--with-gcc=gcc-14'
+          # No dedicated --with-gmp job: gmp is enabled by default and
+          # setup/macos passes --with-gmp-dir to every job, so each check
+          # here already builds and tests with -lgmp.
           - test_task: check
             os: macos-26
             configure_args: '--with-jemalloc --with-opt-dir=$(brew --prefix jemalloc)'
-          - test_task: check
-            os: macos-26
-            configure_args: '--with-gmp'
-          - test_task: test-all
-            test_opts: --repeat-count=2
-            os: macos-26
           - test_task: test-bundler-parallel
             os: macos-26
           - test_task: test-bundled-gems
@@ -89,6 +86,17 @@ jobs:
           sudo sysctl -w kern.coredump=1
           sudo chmod -R +rwx /cores/
 
+      - name: Disable ReportCrash
+        # We don't want this service running on every crash signal. When it's running, processes must wait for
+        # the service to gather process info before they can finish. We have tests that test our crash signal
+        # handling and this service can take a while to run which can time our tests out.
+        run: |
+          launchctl bootout gui/"$(id -u)"/com.apple.ReportCrash 2>/dev/null || true
+          launchctl disable gui/"$(id -u)"/com.apple.ReportCrash 2>/dev/null || true
+          sudo launchctl bootout system/com.apple.ReportCrash.Root 2>/dev/null || true
+          sudo launchctl disable system/com.apple.ReportCrash.Root 2>/dev/null || true
+        continue-on-error: true
+
       - name: Delete unused SDKs
         # To free up disk space to not run out during the run
         run: |
@@ -118,17 +126,14 @@ jobs:
         uses: ./.github/actions/launchable/setup
         with:
           os: ${{ matrix.os }}
-          test-opts: ${{ matrix.test_opts }}
           launchable-token: ${{ secrets.LAUNCHABLE_TOKEN }}
           builddir: build
           srcdir: src
         continue-on-error: true
 
-      - name: Set extra test options
-        run: |
-          echo "TESTS=$TESTS ${{ matrix.test_opts }}" >> $GITHUB_ENV
-          echo "RUBY_TEST_TIMEOUT_SCALE=10" >> $GITHUB_ENV # With --repeat-count=2, flaky test by timeout occurs frequently for some reason
-        if: matrix.test_opts
+      - name: Set timeout scale
+        run: echo "RUBY_TEST_TIMEOUT_SCALE=10" >> $GITHUB_ENV # subprocess assertion timeouts flake on slower/contended macOS runners
+        if: ${{ matrix.test_task == 'check' || matrix.test_task == 'test-all' || matrix.test_task == 'test-bundled-gems' }}
 
       - name: make ${{ matrix.test_task }}
         run: |
